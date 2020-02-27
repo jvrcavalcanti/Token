@@ -1,0 +1,21 @@
+{
+    "name": "accolon/token",
+    "description": "Library for Token",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Joao Victor Rocha Cavalcanti",
+            "email": "jonnyvictor01@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "php": "^7.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "Accolon\\Token\\": "src"
+        }
+    }
+}
