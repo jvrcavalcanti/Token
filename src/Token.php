@@ -19,7 +19,7 @@ class Token
     {
         $validate = time() + (60 * 60 * self::$hour);
 
-        $token = hash(self::$hash, self::$key) . "." . base64_encode($validate) . "." . base64_encode(self::$hash) . "." . base64_encode(json_encode($data));
+        $token = hash(self::$hash, self::$key) . "." . base64_encode($validate) . "." . base64_encode(self::$hash) . "." . base64_encode(serialize($data));
         return $token;
     }
     
@@ -54,6 +54,6 @@ class Token
 
         $hash = explode(".", $hash);
 
-        return json_decode(base64_decode($hash[3]));
+        return unserialize(base64_decode($hash[3]));
     }
 }
