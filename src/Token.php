@@ -8,16 +8,16 @@ class Token
     static private int $hour = 1;
     static private string $key;
 
-    static function config(string $value, int $hours = 1, string $type = "sha256")
+    public static function config(string $value, int $hours = 1, string $type = "sha256"): void
     {
         self::$key = $value;
         self::$hash = $type;
         self::$hour = $hours;
     }
 
-    static function make($data): string
+    public static function make($data): string
     {
-        $validate = time() + (60 * 60 * self::$hour);
+        $validate = microtime(true) + (60 * 60 * self::$hour);
 
         $token = hash(self::$hash, self::$key) . "."
                  . base64_encode($validate) . "." 
@@ -26,7 +26,7 @@ class Token
         return $token;
     }
     
-    static function verify(string $hash): bool
+    public static function verify(string $hash): bool
     {
         $token = explode(".", $hash);
 
@@ -42,7 +42,7 @@ class Token
             return false;
         }
 
-        if(base64_decode($token[1]) < time()) {
+        if(base64_decode($token[1]) < microtime(true)) {
             return false;
         }
 
@@ -55,7 +55,7 @@ class Token
         return true;
     }
 
-    static function extract(string $hash)
+    public static function extract(string $hash)
     {
         if(!self::verify($hash)) {
             return null;

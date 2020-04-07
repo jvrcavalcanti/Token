@@ -9,7 +9,6 @@ final class TokenTest extends TestCase
     {
         Token::config("test", 0);
         $token = Token::make(["user" => "Test"]);
-        sleep(1);
 
         $this->assertFalse(Token::verify($token));
     }
