@@ -7,9 +7,13 @@ class Token
     static private string $hash = "sha256";
     static private int $hour = 1;
     static private string $key;
+    static private string $header;
 
-    public static function config(string $value, int $hours = 1, string $type = "sha256"): void
+    public static function config(
+        string $value, int $hours = 1, string $type = "sha256", string $head = "accolon"
+    ): void
     {
+        self::$header = $head;
         self::$key = $value;
         self::$hash = $type;
         self::$hour = $hours;
@@ -19,10 +23,12 @@ class Token
     {
         $validate = microtime(true) + (60 * 60 * self::$hour);
 
-        $token = hash(self::$hash, self::$key) . "."
+        $token = hash(self::$hash, self::$header) . "."
+                 . hash(self::$hash, self::$key) . "."
                  . base64_encode($validate) . "." 
                  . base64_encode(self::$hash) . "." 
-                 . base64_encode(serialize($data) . "." . hash(self::$hash, self::$key));
+                 . base64_encode(serialize($data) . "." . hash(self::$hash, self::$key)
+                );
         return $token;
     }
     
@@ -30,23 +36,27 @@ class Token
     {
         $token = explode(".", $hash);
 
-        if(sizeof($token) != 4) {
+        if(sizeof($token) != 5) {
             return false;
         }
 
-        if(base64_decode($token[2]) != self::$hash) {
+        if ($token[0] != hash(self::$hash, self::$header)) {
             return false;
         }
 
-        if(hash(self::$hash, self::$key) != $token[0]) {
+        if(base64_decode($token[3]) != self::$hash) {
             return false;
         }
 
-        if(base64_decode($token[1]) < microtime(true)) {
+        if(hash(self::$hash, self::$key) != $token[1]) {
             return false;
         }
 
-        $data = explode(".", base64_decode($token[3]));
+        if(base64_decode($token[2]) < microtime(true)) {
+            return false;
+        }
+
+        $data = explode(".", base64_decode($token[4]));
 
         if($data[1] != hash(self::$hash, self::$key)) {
             return false;
@@ -63,6 +73,6 @@ class Token
 
         $hash = explode(".", $hash);
 
-        return unserialize(base64_decode($hash[3]));
+        return unserialize(base64_decode($hash[4]));
     }
 }
