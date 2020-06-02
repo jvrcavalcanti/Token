@@ -27,8 +27,9 @@ class Token
                  . hash(self::$hash, self::$key) . "."
                  . base64_encode($validate) . "." 
                  . base64_encode(self::$hash) . "." 
-                 . base64_encode(serialize($data) . "." . hash(self::$hash, self::$key)
+                 . base64_encode(base64_encode(serialize($data)) . "." . hash(self::$hash, self::$key)
                 );
+
         return $token;
     }
     
@@ -73,6 +74,8 @@ class Token
 
         $hash = explode(".", $hash);
 
-        return unserialize(base64_decode($hash[4]));
+        $payload = explode(".", base64_decode($hash[4]));
+
+        return unserialize(base64_decode($payload[0]));
     }
 }
