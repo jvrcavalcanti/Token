@@ -10,9 +10,7 @@
         }
     ],
     "minimum-stability": "stable",
-    "require": {
-        "php": "^7.4"
-    },
+    "require": {},
     "autoload": {
         "psr-4": {
             "Accolon\\Token\\": "src"
